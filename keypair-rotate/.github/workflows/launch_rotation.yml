@@ -1,0 +1,22 @@
+name: Rotate Multiple Snowflake Credentials
+
+on:
+  workflow_dispatch:
+
+jobs:
+  rotate-credentials:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        accounts: [user1, user2, user3] # Extend this list as needed
+        projects: [123, 456, 789]
+        passphrase_name: [passphrase1, passphrase2, passphrase3]
+        private_key_name: [privatekey1, privatekey2, privatekey3]
+    steps:
+      - name: Call Rotate Snowflake Credentials Workflow
+        uses: ./.github/workflows/rotate.yml
+        with:
+          snowflake_service_account: ${{ matrix.accounts }}
+          dbt_cloud_project_id: ${{ matrix.projects }}
+          passphrase_name: ${{ matrix.passphrase_name }}
+          private_key_name: ${{ matrix.private_key_name }}
