@@ -25,28 +25,36 @@ permissions:
 
 jobs:
   generate-key-pair:
+    # use openssl to generate RSA key pair and store in Github
     runs-on: ubuntu-latest
+    outputs:
+      snowflake_passphrase: ${{ steps.store_passphrase.outputs.SNOWFLAKE_PASSPHRASE }}
+      snowflake_private_key: ${{ steps.store_private_key.outputs.SNOWFLAKE_PRIVATE_KEY }}
+      snowflake_public_key: ${{ steps.store_public_key.outputs.SNOWFLAKE_PUBLIC_KEY }}
     steps:
       - name: Store passphrase as GitHub Secret
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        id: store_passphrase
         run: |
-          gh secret set SNOWFLAKE_PASSPHRASE --body "$(openssl rand -base64 32)"
+          echo "::add-mask::$snowflake_passphrase"
+          echo "snowflake_passphrase=$(openssl rand -base64 32)" >> $GITHUB_ENV
+
       - name: Generate RSA key pair
+        id: generate_rsa_key
         run: |
-        openssl genrsa 2048 | openssl pkcs8 -topk8 -v2 des3 -inform PEM -out rsa_key.p8 -passout pass:${{ secrets.SNOWFLAKE_PASSPHRASE }}
+        openssl genrsa 2048 | openssl pkcs8 -topk8 -v2 des3 -inform PEM -out rsa_key.p8 -passout pass:${{ env.snowflake_passphrase }}
         openssl rsa -in rsa_key.p8 -pubout -out rsa_key.pub
 
       - name: Store private key as GitHub Secret
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        id: store_private_key
         run: |
-          gh secret set SNOWFLAKE_PRIVATE_KEY --body "$(cat rsa_key.p8)"
+          echo "::add-mask::$snowflake_private_key"
+          echo "snowflake_private_key=$(cat rsa_key.p8)" >> $GITHUB_ENV
+
       - name: Store public key as GitHub Secret
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        id: store_public_key
         run: |
-          gh secret set SNOWFLAKE_PUBLIC_KEY --body "$(cat rsa_key.pub | tr -d '\n' | sed 's/-----BEGIN PUBLIC KEY-----//' | sed 's/-----END PUBLIC KEY-----//')"
+            echo "::add-mask::$snowflake_public_key"
+            echo "snowflake_public_key=$(cat rsa_key.pub | tr -d '\n' | sed 's/-----BEGIN PUBLIC KEY-----//' | sed 's/-----END PUBLIC KEY-----//')" >> $GITHUB_ENV
 
   rotate-key-pair:
     runs-on: ubuntu-latest
@@ -95,7 +103,7 @@ jobs:
       - name: Rotate Snowflake Service Account Key Pair
         env:
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
-          SNOWSQL_PRIVATE_KEY_PASSPHRASE: $OLD_PASSPHRASE
+          SNOWSQL_PRIVATE_KEY_PASSPHRASE: ${{ env.OLD_PASSPHRASE }}
         run: |
           snowsql -a $SNOWFLAKE_ACCOUNT -u ${{ github.event.inputs.snowflake_service_account }} --private-key-path old_rsa_key.p8 -q "
           ALTER USER ${{ github.event.inputs.snowflake_service_account }} SET RSA_PUBLIC_KEY_2 = RSA_PUBLIC_KEY;
@@ -104,7 +112,7 @@ jobs:
           ALTER USER ${{ github.event.inputs.snowflake_service_account }} UNSET RSA_PUBLIC_KEY;
           "
           snowsql -a $SNOWFLAKE_ACCOUNT -u ${{ github.event.inputs.snowflake_service_account }} --private-key-path old_rsa_key.p8 -q "
-          ALTER USER ${{ github.event.inputs.snowflake_service_account }} SET RSA_PUBLIC_KEY='${{ secrets.SNOWFLAKE_PUBLIC_KEY }}';
+          ALTER USER ${{ github.event.inputs.snowflake_service_account }} SET RSA_PUBLIC_KEY='${{ needs.generate-key-pair.outputs.snowflake_public_key }}';
           "
           snowsql -a $SNOWFLAKE_ACCOUNT -u ${{ github.event.inputs.snowflake_service_account }} --private-key-path old_rsa_key.p8 -q "
           ALTER USER ${{ github.event.inputs.snowflake_service_account }} UNSET RSA_PUBLIC_KEY_2;
@@ -127,7 +135,7 @@ jobs:
             az keyvault secret set
             --vault-name ${{ secrets.AZURE_VAULT_NAME }}
             --name ${{ github.event.inputs.passphrase_name }}
-            --value "${{ secrets.SNOWFLAKE_PASSPHRASE }}"
+            --value "${{ needs.generate-key-pair.outputs.snowflake_passphrase }}"
 
       - name: Upload RSA Private Key to Key Vault
         uses: azure/cli@v2
@@ -137,7 +145,7 @@ jobs:
             az keyvault secret set
             --vault-name ${{ secrets.AZURE_VAULT_NAME }}
             --name ${{ github.event.inputs.private_key_name }}
-            --value "${{ secrets.SNOWFLAKE_PRIVATE_KEY }}"
+            --value "${{ needs.generate-key-pair.outputs.snowflake_private_key }}"
 
   update-dbt-cloud:
     runs-on: ubuntu-latest
@@ -147,8 +155,8 @@ jobs:
       TF_VAR_dbt_token: ${{ secrets.DBT_CLOUD_TOKEN }}
       TF_VAR_dbt_host_url: "https://cloud.getdbt.com/api"
       TF_VAR_dbt_project_id: ${{ github.event.inputs.dbt_cloud_project_id }}
-      TF_VAR_snowflake_private_key: ${{ secrets.SNOWFLAKE_PRIVATE_KEY }}
-      TF_VAR_snowflake_passphrase: ${{ secrets.SNOWFLAKE_PASSPHRASE }}
+      TF_VAR_snowflake_private_key: ${{ needs.generate-key-pair.outputs.snowflake_private_key }}
+      TF_VAR_snowflake_passphrase: ${{ needs.generate-key-pair.outputs.snowflake_passphrase }}
       TF_VAR_snowflake_service_account: ${{ github.event.inputs.snowflake_service_account }}
     steps:
       - name: Check out the repository
