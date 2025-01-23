@@ -1,0 +1,49 @@
+{
+    "environments": [
+      {
+        "connection_id": 207456,
+        "dbt_version": "latest",
+        "enable_model_query_history": false,
+        "name": "Development Environment",
+        "project_id": 382446,
+        "type": "development",
+        "use_custom_branch": false
+      },
+      {
+        "connection_id": 213678,
+        "credential_id": 419861,
+        "custom_branch": "dev",
+        "dbt_version": "latest",
+        "deployment_type": "staging",
+        "enable_model_query_history": false,
+        "name": "Staging Environment",
+        "project_id": 382446,
+        "type": "deployment",
+        "use_custom_branch": true
+      },
+      {
+        "connection_id": 207456,
+        "credential_id": 419863,
+        "custom_branch": "main",
+        "dbt_version": "latest",
+        "deployment_type": "production",
+        "enable_model_query_history": false,
+        "name": "Production Environment",
+        "project_id": 382446,
+        "type": "deployment",
+        "use_custom_branch": true
+      },
+      {
+        "connection_id": 207456,
+        "credential_id": 421014,
+        "custom_branch": "dev",
+        "dbt_version": "latest",
+        "enable_model_query_history": false,
+        "name": "Dev Deploy Environment",
+        "project_id": 382446,
+        "type": "deployment",
+        "use_custom_branch": true
+      }
+    ]
+  }
+  
