@@ -1,3 +1,11 @@
+terraform {
+  required_providers {
+    dbtcloud = {
+      source  = "dbt-labs/dbtcloud"
+    }
+  }
+}
+
 locals {
   flattened_jobs = flatten([
     for env in var.environments_data : [

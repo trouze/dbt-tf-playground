@@ -13,3 +13,7 @@ You can use the same terraform module to *only* rotate Databricks credentials:
 ```
 terraform apply -target=dbtcloud_databricks_credential.databricks_credential
 ```
+
+## Contributing and testing this module
+```
+terraform plan/apply 

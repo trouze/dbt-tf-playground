@@ -1,3 +1,11 @@
+terraform {
+  required_providers {
+    dbtcloud = {
+      source  = "dbt-labs/dbtcloud"
+    }
+  }
+}
+
 resource "dbtcloud_environment_variables" "environment_variables" {
   for_each = {
     for env_var in var.environment_variables :
