@@ -3,5 +3,5 @@ output "repository_id" {
 }
 
 output "project_repository_id" {
-  value = dbtcloud_project_repository.project_repository.id
+  value = dbtcloud_repository.repository.repository_id
 }

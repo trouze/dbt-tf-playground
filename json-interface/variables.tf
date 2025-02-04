@@ -12,20 +12,21 @@ variable "dbt_host_url" {
   type = string
 }
 
-# load json project configuration file
-locals {
-  data = jsondecode(file(var.json_file))
-}
-
 # variables
 variable "json_file" {
   description = "Path to the JSON file"
   type        = string
 }
 
+# load json project configuration file
+locals {
+  project_config = jsondecode(file(var.json_file))
+}
+
 # there could be multiple credentials
 variable "databricks_token" {
   type        = map(string)
+  default     = null
   description = "API token for DBT Cloud authentication"
   sensitive   = true
 }

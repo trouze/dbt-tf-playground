@@ -7,5 +7,5 @@ terraform {
 }
 
 resource "dbtcloud_project" "project" {
-  name = var.project_config.project.name
+  name = var.project_name
 }

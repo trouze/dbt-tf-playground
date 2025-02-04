@@ -17,7 +17,7 @@ module "project" {
     source = "./modules/project"
 
     // inputs
-    project_config = local.project_config.project
+    project_name = local.project_config.project.name
     // outputs module.project.project_id
 }
 
@@ -32,7 +32,7 @@ module "repository" {
 module "project_repository" {
   source = "./modules/project_repository"
   // inputs
-  repository_data = local.project_config.project.repository
+  repository_id = module.repository.project_repository_id
   project_id = module.project.project_id
   // outputs module.project_repository.project_repository_id
 }

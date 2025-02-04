@@ -1,6 +1,5 @@
-variable "project_config" {
+variable "project_name" {
   description = "Project name"
-  type = object({
-    name = string
-  })
+  type = string
 }
+

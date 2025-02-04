@@ -1,0 +1,54 @@
+{
+    "project": {
+        "name": "tyler tf test project",
+        "repository": {
+            "remote_url": "<gitlab-group>/<gitlab-project>",
+            "gitlab_project_id": 8765
+        },
+        "environments": [
+            {
+                "name": "Production Environment",
+                "credential": {
+                    "token_name": "token_some_name",
+                    "schema": "public"
+                },
+                "connection_id": 1234,
+                "custom_branch": "main",
+                "dbt_version": "latest",
+                "deployment_type": "production",
+                "enable_model_query_history": false,
+                "type": "deployment",
+                "use_custom_branch": true,
+                "jobs": [
+                    {
+                        "name": "Daily Job",
+                        "execute_steps": [
+                            "dbt run"
+                        ],
+                        "num_threads": 4,
+                        "deferral": true
+                    },
+                    {
+                        "name": "another job",
+                        "execute_steps": [
+                            "dbt parse"
+                        ],
+                        "num_threads": 10
+                    }
+                ]
+            }
+
+        ],
+        "environment_variables": [
+            {
+                "name": "DBT_ENV_VAR",
+                "environment_values": {
+                    "project": "value",
+                    "Dev": "value",
+                    "Staging": "value",
+                    "Production Environment": "value"
+                }
+            }
+        ]
+    }
+}

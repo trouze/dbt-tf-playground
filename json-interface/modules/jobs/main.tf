@@ -40,7 +40,6 @@ resource "dbtcloud_job" "job" {
   errors_on_lint_failure     = lookup(each.value, "errors_on_lint_failure", true)
   generate_docs              = lookup(each.value, "generate_docs", false)
   is_active                  = lookup(each.value, "is_active", true)
-  job_completion_trigger_condition = lookup(each.value, "job_completion_trigger_condition", null)
   num_threads                = lookup(each.value, "num_threads", null)
   run_compare_changes        = lookup(each.value, "run_compare_changes", false)
   run_generate_sources       = lookup(each.value, "run_generate_sources", false)

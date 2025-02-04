@@ -7,6 +7,6 @@ terraform {
 }
 
 resource "dbtcloud_project_repository" "project_repository" {
-  project_id    = var.project.id
-  repository_id = var.repository.id
+  project_id    = var.project_id
+  repository_id = var.repository_id
 }
