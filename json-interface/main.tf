@@ -42,7 +42,7 @@ module "credentials" {
   // inputs
   environments_data = local.project_config.project.environments
   project_id = module.project.project_id
-  token_map = var.databricks_token
+  token_map = var.databricks_tokens
   // outputs module.credentials.credential_id
 }
 

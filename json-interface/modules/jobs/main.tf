@@ -27,8 +27,8 @@ resource "dbtcloud_job" "job" {
   for_each = local.jobs_map
 
   project_id     = var.project_id
-  name           = each.key
-  environment_id = lookup(var.environment_ids, each.value.environment_name, null)  # Look up the environment ID
+  name           = split("_", each.key)[1]
+  environment_id = lookup(var.environment_ids, split("_", each.key)[0], null)  # Look up the environment ID
   execute_steps  = each.value.execute_steps
   triggers       = each.value.triggers
 

@@ -1,12 +1,6 @@
 variable "environments_data" {
   description = "List of environment configurations, including credentials"
-  type = list(object({
-    name       = string
-    credential = object({
-      token_name = string
-      schema     = string
-    })
-  }))
+  type = any
 }
 
 variable "project_id" {

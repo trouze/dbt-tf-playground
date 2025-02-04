@@ -2,40 +2,51 @@
     "project": {
         "name": "tyler tf test project",
         "repository": {
-            "remote_url": "<gitlab-group>/<gitlab-project>",
-            "gitlab_project_id": 8765
+            "remote_url": "git@github.com:trouze/adi-domain-jaffle.git",
+            "gitlab_project_id": 267820
         },
         "environments": [
             {
                 "name": "Production Environment",
                 "credential": {
-                    "token_name": "token_some_name",
+                    "token_name": "test_token",
                     "schema": "public"
                 },
-                "connection_id": 1234,
-                "custom_branch": "main",
-                "dbt_version": "latest",
+                "connection_id": 207456,
                 "deployment_type": "production",
-                "enable_model_query_history": false,
                 "type": "deployment",
-                "use_custom_branch": true,
                 "jobs": [
                     {
                         "name": "Daily Job",
                         "execute_steps": [
                             "dbt run"
                         ],
-                        "num_threads": 4,
-                        "deferral": true
+                        "triggers": {
+                            "github_webhook": false,
+                            "git_provider_webhook": false,
+                            "schedule": false,
+                            "on_merge": false
+                        }
                     },
                     {
-                        "name": "another job",
+                        "name": "Ad-hoc job",
                         "execute_steps": [
                             "dbt parse"
                         ],
-                        "num_threads": 10
+                        "triggers": {
+                            "github_webhook": false,
+                            "git_provider_webhook": false,
+                            "schedule": false,
+                            "on_merge": false
+                        }
                     }
                 ]
+            },
+            {
+                "name": "Development Environment",
+                "connection_id": 207456,
+                "type": "development",
+                "jobs": []
             }
 
         ],
@@ -44,8 +55,15 @@
                 "name": "DBT_ENV_VAR",
                 "environment_values": {
                     "project": "value",
-                    "Dev": "value",
-                    "Staging": "value",
+                    "Development Environment": "value",
+                    "Production Environment": "value"
+                }
+            },
+            {
+                "name": "DBT_ENV_SECRET_VAR",
+                "environment_values": {
+                    "project": "value",
+                    "Development Environment": "value",
                     "Production Environment": "value"
                 }
             }
