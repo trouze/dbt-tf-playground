@@ -14,7 +14,7 @@ locals {
         job_name = job.name
         job_data = job
       }
-    ]
+    ] if try(env.jobs, null) != null
   ])
 
   jobs_map = {

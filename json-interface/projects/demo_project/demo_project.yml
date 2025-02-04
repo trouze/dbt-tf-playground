@@ -31,7 +31,6 @@ project:
     - name: Development Environment
       connection_id: 207456
       type: development
-      jobs: []
   environment_variables:
     - name: DBT_ENV_VAR
       environment_values:
