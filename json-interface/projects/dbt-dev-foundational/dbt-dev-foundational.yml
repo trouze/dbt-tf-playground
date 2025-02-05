@@ -1,0 +1,80 @@
+project:
+  name: dbt-dev-foundational
+  repository:
+    remote_url: "kairos/applications/pub/dbt-dev-found"
+    gitlab_project_id: 6488
+    pull_request_url_template: "https://gitlab.toolchain.corning.com/kairos/applications/pub/dbt-dev-found/-/merge_requests/new?merge_request%5Bsource_branch%5D={{source}}&merge_request%5Btarget_branch%5D={{destination}}"
+  environments:
+    - name: Development
+      connection_id: 70403103930283
+      type: development
+    - name: QA
+      connection_id: 70403103930283
+      custom_branch: staging
+      deployment_type: staging
+      type: deployment
+      jobs:
+        - name: QA
+          description: main domain QA job run.
+          execute_steps:
+            - dbt build
+          triggers:
+            git_provider_webhook: false
+            github_webhook: false
+            on_merge: false
+            schedule: false
+          target_name: prod
+          generate_docs: true
+          num_threads: 4
+          schedule_cron: "5 */12 * * 0,1,2,3,4,5,6"
+          schedule_type: custom_cron
+
+    - name: Production
+      connection_id: 70403103930283
+      custom_branch: production
+      deployment_type: production
+      type: deployment
+      jobs:
+        - name: Prod
+          description: Production load
+          execute_steps:
+            - dbt build
+          triggers:
+            git_provider_webhook: false
+            github_webhook: false
+            on_merge: false
+            schedule: true
+          generate_docs: true
+          target_name: prod
+          schedule_type: days_of_week
+          schedule_days: [0, 1, 2, 3, 4, 5, 6]
+          schedule_hours: [2, 8, 18]
+    - name: CI
+      connection_id: 70403103930283
+      custom_branch: main
+      type: deployment
+      jobs:
+        - name: CI job
+          execute_steps:
+            - "dbt build --select state:modified+"
+          triggers:
+            git_provider_webhook: true
+            github_webhook: false
+            on_merge: false
+            schedule: false
+          generate_docs: true
+          target_name: ci
+          schedule_type: custom_cron
+          schedule_cron: "5 */12 * * 0,1,2,3,4,5,6"
+
+  environment_variables:
+    - name: DBT_ENV_VAR
+      environment_values:
+        project: value
+        Development Environment: value
+        Production Environment: value
+    - name: DBT_ENV_SECRET_VAR
+      environment_values:
+        project: value
+        Development Environment: value
+        Production Environment: value

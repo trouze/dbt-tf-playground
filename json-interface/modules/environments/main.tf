@@ -23,5 +23,5 @@ resource "dbtcloud_environment" "environments" {
   enable_model_query_history = lookup(each.value, "enable_model_query_history", null)
   custom_branch              = lookup(each.value, "custom_branch", null)
   deployment_type            = lookup(each.value, "deployment_type", null)
-  use_custom_branch          = lookup(each.value, "use_custom_branch", false)
+  use_custom_branch          = each.value.custom_branch != null
 }

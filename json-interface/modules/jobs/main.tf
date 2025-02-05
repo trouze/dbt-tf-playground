@@ -40,7 +40,7 @@ resource "dbtcloud_job" "job" {
   errors_on_lint_failure     = lookup(each.value, "errors_on_lint_failure", true)
   generate_docs              = lookup(each.value, "generate_docs", false)
   is_active                  = lookup(each.value, "is_active", true)
-  num_threads                = lookup(each.value, "num_threads", null)
+  num_threads                = lookup(each.value, "num_threads", 4)
   run_compare_changes        = lookup(each.value, "run_compare_changes", false)
   run_generate_sources       = lookup(each.value, "run_generate_sources", false)
   run_lint                   = lookup(each.value, "run_lint", false)
@@ -51,6 +51,6 @@ resource "dbtcloud_job" "job" {
   schedule_type              = lookup(each.value, "schedule_type", null)
   self_deferring             = lookup(each.value, "self_deferring", false)
   target_name                = lookup(each.value, "target_name", null)
-  timeout_seconds            = lookup(each.value, "timeout_seconds", null)
+  timeout_seconds            = lookup(each.value, "timeout_seconds", 0)
   triggers_on_draft_pr       = lookup(each.value, "triggers_on_draft_pr", false)
 }
