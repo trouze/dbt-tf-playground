@@ -14,7 +14,7 @@ provider "dbtcloud" {
 }
 
 module "project" {
-    source = "./modules/project"
+    source = "../modules/project/project"
 
     // inputs
     project_name = local.project_config.project.name
@@ -22,7 +22,7 @@ module "project" {
 }
 
 module "repository" {
-  source          = "./modules/repository"
+  source          = "../modules/project/repository"
   // inputs
   repository_data = local.project_config.project.repository
   project_id      = module.project.project_id
@@ -30,7 +30,7 @@ module "repository" {
 }
 
 module "project_repository" {
-  source = "./modules/project_repository"
+  source = "../modules/project/project_repository"
   // inputs
   repository_id = module.repository.project_repository_id
   project_id = module.project.project_id
@@ -38,7 +38,7 @@ module "project_repository" {
 }
 
 module "credentials" {
-  source = "./modules/credentials"
+  source = "../modules/project/credentials"
   // inputs
   environments_data = local.project_config.project.environments
   project_id = module.project.project_id
@@ -47,7 +47,7 @@ module "credentials" {
 }
 
 module "environments" {
-  source = "./modules/environments"
+  source = "../modules/project/environments"
   // inputs
   project_id       = module.project.project_id  # Assuming project_id is output from the project module
   environments_data = local.project_config.project.environments # Data loaded from the json config
@@ -56,7 +56,7 @@ module "environments" {
 }
 
 module "jobs" {
-  source = "./modules/jobs"
+  source = "../modules/project/jobs"
   // inputs
   project_id = module.project.project_id
   environments_data = local.project_config.project.environments
@@ -64,7 +64,7 @@ module "jobs" {
 }
 
 module "environment_variables" {
-  source = "./modules/environment_variables"
+  source = "../modules/project/environment_variables"
   // inputs
   project_id = module.project.project_id
   environment_variables = local.project_config.project.environment_variables

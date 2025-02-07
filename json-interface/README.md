@@ -16,4 +16,8 @@ terraform apply -target=dbtcloud_databricks_credential.databricks_credential
 
 ## Contributing and testing this module
 ```
-terraform plan/apply 
+terraform plan/apply
+```
+
+# Extending this module for Account level resources
+If you'd like to expand the usage of the current set of terraform modules to manage account configs in dbt Cloud, I'd recommend creating a folder in projects that houses the account information. You'll need 
