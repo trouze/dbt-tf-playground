@@ -66,15 +66,3 @@ project:
           target_name: ci
           schedule_type: custom_cron
           schedule_cron: "5 */12 * * 0,1,2,3,4,5,6"
-
-  environment_variables:
-    - name: DBT_ENV_VAR
-      environment_values:
-        project: value
-        Development Environment: value
-        Production Environment: value
-    - name: DBT_ENV_SECRET_VAR
-      environment_values:
-        project: value
-        Development Environment: value
-        Production Environment: value

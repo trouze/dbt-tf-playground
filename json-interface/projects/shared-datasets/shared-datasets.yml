@@ -1,0 +1,107 @@
+project:
+  name: Shared Datasets (UCPR)
+  repository:
+    remote_url: "kairos/applications/pub/shared_datasets_prod"
+    gitlab_project_id: 6488
+    pull_request_url_template: "https://gitlab.toolchain.corning.com/kairos/applications/pub/shared_datasets_prod/-/merge_requests/new?merge_request%5Bsource_branch%5D={{source}}&merge_request%5Btarget_branch%5D={{destination}}"
+  environments:
+    - name: Dev
+      connection_id: 70403103917511
+      type: development
+    - name: CI
+      connection_id: 70403103917511
+      type: deployment
+      jobs:
+        - name: CI Job
+          description: Build and test (CICD) upon opening MR in GitLab
+          execute_steps:
+            - dbt clone --select state:modified+,config.materialized:incremental,state:old
+            - dbt build --select state:modified+ --fail-fast
+          triggers:
+            git_provider_webhook: true
+            github_webhook: false
+            on_merge: false
+            schedule: false
+          deferring_environment_id: 70403103918999
+          num_threads: 8
+          schedule_type: "days_of_week"
+          schedule_days: [0, 1, 2, 3, 4, 5, 6]
+          target_name: ci
+
+    - name: Prod
+      connection_id: 70403103917511
+      deployment_type: production
+      type: deployment
+      jobs:
+        - name: Prod Job
+          description: Build project job
+          execute_steps:
+            - dbt build
+          triggers:
+            git_provider_webhook: false
+            github_webhook: false
+            on_merge: false
+            schedule: false
+          generate_docs: true
+          num_threads: 8
+          target_name: prod
+          schedule_type: days_of_week
+          schedule_days: [0, 1, 2, 3, 4, 5, 6]
+          schedule_hours: [2, 8, 18]
+        - name: Cleanup CI Job
+          description: Cleanup CI models job
+          execute_steps:
+            - dbt build --select cleanup_stale_ci_models
+          triggers:
+            git_provider_webhook: false
+            github_webhook: false
+            on_merge: false
+            schedule: false
+          generate_docs: true
+          errors_on_lint_failure: true
+          num_threads: 8
+          run_generate_sources: true
+          target_name: prod
+          schedule_type: days_of_week
+          schedule_days: [0, 1, 2, 3, 4, 5, 6]
+          schedule_hours: [10]
+    - name: CI
+      connection_id: 70403103930283
+      custom_branch: main
+      type: deployment
+      jobs:
+        - name: CI job
+          execute_steps:
+            - "dbt build --select state:modified+"
+          triggers:
+            git_provider_webhook: true
+            github_webhook: false
+            on_merge: false
+            schedule: false
+          generate_docs: true
+          target_name: ci
+          schedule_type: custom_cron
+          schedule_cron: "5 */12 * * 0,1,2,3,4,5,6"
+
+  environment_variables:
+    - name: DBT_GITLAB_I2_USER_NAME
+      environment_values:
+        project: gitlab+deploy-token-549
+    - name: DBT_ENV_SECRET_GITLAB_I2_DEPLOY_TOKEN
+      environment_values:
+        project: secret_DBT_ENV_SECRET_GITLAB_I2_DEPLOY_TOKEN
+    - name: DBT_GITLAB_USER_NAME
+      environment_values:
+        project: install_kairos_dbt
+    - name: DBT_ENV_SECRET_GITLAB_DEPLOY_TOKEN
+      environment_values:
+        project: secret_DBT_ENV_SECRET_GITLAB_DEPLOY_TOKEN
+    - name: DBT_ENV_SECRET_GITLAB_SD_DEPLOY_TOKEN
+      environment_values:
+        project: secret_DBT_ENV_SECRET_GITLAB_SD_DEPLOY_TOKEN
+    - name: DBT_GITLAB_SD_USER_NAME
+      environment_values:
+        project: gitlab+deploy-token-437
+    - name: DBT_DATABRICKS_WORKSPACE
+      environment_values:
+        project: ucpr
