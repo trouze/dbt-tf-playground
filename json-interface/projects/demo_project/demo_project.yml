@@ -22,7 +22,7 @@ project:
             on_merge: false
         - name: Ad-hoc job
           execute_steps:
-            - dbt parse
+            - dbt compile
           triggers:
             github_webhook: false
             git_provider_webhook: false
@@ -42,3 +42,8 @@ project:
         project: value
         Development Environment: value
         Production Environment: value
+    - name: DBT_ENV_SOME_OTHER_VAR
+      environment_values:
+        project: some_value
+        Development Environment: some_other_value
+        Production Environment: some_prod_value
