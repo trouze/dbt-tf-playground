@@ -24,9 +24,9 @@ locals {
 }
 
 # there could be multiple credentials
-variable "databricks_tokens" {
+variable "token_map" {
   type        = map(string)
   default     = null
-  description = "API token for DBT Cloud authentication"
+  description = "Dictionary of credentials to pass to terraform module"
   sensitive   = true
 }

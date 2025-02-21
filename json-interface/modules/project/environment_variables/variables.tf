@@ -15,3 +15,9 @@ variable "environment_variables" {
     environment_values = map(string)
   }))
 }
+
+variable "token_map" {
+    type = map(string)
+    description = "Mapping of token names to credential"
+    sensitive = true
+}

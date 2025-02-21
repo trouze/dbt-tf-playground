@@ -39,9 +39,7 @@ project:
         Production Environment: value
     - name: DBT_ENV_SECRET_VAR
       environment_values:
-        project: value
-        Development Environment: value
-        Production Environment: value
+        project: secret_test
     - name: DBT_ENV_SOME_OTHER_VAR
       environment_values:
         project: some_value

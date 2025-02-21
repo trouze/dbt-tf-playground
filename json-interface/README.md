@@ -2,7 +2,7 @@
 ## Loading credentials into the env
 Please use the following pattern to load dbx tokens into the environment so terraform can set them in dbt Cloud.
 ```
-export TF_VAR_databricks_tokens='{"token_some_name": "secure-token-123","token_other_name": "secure-token-456"}'
+export TF_VAR_token_map='{"test_token": "secure-token-123", "secret_test": "test"}'
 ```
 
 # Credential Rotation
