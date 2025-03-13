@@ -34,8 +34,8 @@ resource "dbtcloud_job" "job" {
 
   # Optional fields with lookup to default to null if not provided
   dbt_version                = lookup(each.value, "dbt_version", null)
-  deferring_environment_id   = lookup(each.value, "deferral", false) ? each.value.environment_id : lookup(each.value, "environment_id", null)
-  deferring_job_id           = lookup(each.value, "deferring_job_id", null)
+  deferring_environment_id   = try(lookup(var.environment_ids, each.value.deferring_environment, null), null)
+  deferring_job_id           = null # this is legacy
   description                = lookup(each.value, "description", null)
   errors_on_lint_failure     = lookup(each.value, "errors_on_lint_failure", true)
   generate_docs              = lookup(each.value, "generate_docs", false)
